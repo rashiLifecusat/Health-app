@@ -3,7 +3,21 @@ const router=express.Router();
 const lib= require('../../index');
 const joiValidation=require('../joivalidation')
 const userService = require('./Service')
+const commonfunctions = require('../commonfunctions')
+var message=commonfunctions.customMessages();
 
+const multerStorage=lib.multer.diskStorage({
+    destination:(req,file,cb)=>{
+        cb(null,'./public/Profilephoto')
+    },
+    filename:(req,file,cb)=>{
+        req.body.file= file ? "FILE-" + Date.now() + (file.originalname) : ""
+        cb(null,"FILE-" + Date.now() + (file.originalname))
+    }
+});
+var profileUpload= lib.multer({
+    storage:multerStorage
+})
 
 
 router.post("/user/generateOTP",joiValidation,userService.generateOtp);
@@ -16,12 +30,16 @@ router.post('/user/forgotPassword',joiValidation,userService.forgotPassword);
 router.post('/user/verifyEmailOtp',joiValidation,userService.verifyEmailOtp);
 router.post('/user/newPassword',joiValidation,userService.newPassword);
 router.post('/user/resetPassword',joiValidation,userService.resetPassword);
-router.post('/user/logout',userService.logOut)
+router.post('/user/logout',userService.logOut);
+router.post('/user/updateProfile',isAuthenticated,profileUpload.single('file'),userService.updateProfile);
+router.post('/user/booking_request',isAuthenticated,userService.booking_request)
+router.post('/user/accept_or_decline',isAuthenticated,userService.accept_or_decline)
+
 router.get('/user/testApi',async(req,res)=>{
     res.render('linkexpired')
 })
 async function isAuthenticated(req,res,next) {
-    let givenToken=req.headers['x_tokken']||req.query['token'];
+    let givenToken=req.headers['x-token']||req.query['token'];
     let existingToken= await lib.userModel.findOne({accessToken:givenToken})
     if(!existingToken) {
         return res.send({status:false,code:203,message:message.SESSION_ERROR});
@@ -353,4 +371,119 @@ async function isAuthenticated(req,res,next) {
  *       500:
  *         description: Some server error
  */
+
+/**
+ * @swagger
+ * /user/updateProfile:
+ *   post:
+ *     summary:  create new add
+ *     description: adminId and token required
+ *     tags: [users]
+ *     parameters:
+ *      - in: header
+ *        description: required
+ *        name: x-token
+ *        schema:
+ *          type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *        multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *              file:
+ *                type: string
+ *                format: binary
+ *              bio:
+ *                type: string
+ *              email:
+ *                type: string
+ *              contact:
+ *                type: string
+ *              countryCode:
+ *                type: string
+ *              user_name:
+ *                type: string
+ *     responses:
+ *       200:
+ *         description: logout
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *       500:
+ *         description: Some server error
+ */
+
+/**
+ * @swagger
+ * /user/booking_request:
+ *   post:
+ *     summary: Request api
+ *     description: all fields are required
+ *     tags: [users]
+ *     parameters:
+ *      - in: header
+ *        description: required
+ *        name: x-token
+ *        schema:
+ *          type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *              date:
+ *                type: string
+ *              doctorId:
+ *                type: string
+ *     responses:
+ *       200:
+ *         description: user login
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *       500:
+ *         description: Some server error
+ */
+
+/**
+ * @swagger
+ * /user/accept_or_decline:
+ *   post:
+ *     summary: Accept or decline
+ *     description: all fields are required
+ *     tags: [users]
+ *     parameters:
+ *      - in: header
+ *        description: required
+ *        name: x-token
+ *        schema:
+ *          type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *              requestId:
+ *                type: string
+ *              type:
+ *                type: string
+ *     responses:
+ *       200:
+ *         description: user login
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *       500:
+ *         description: Some server error
+ */
+
 module.exports=router;

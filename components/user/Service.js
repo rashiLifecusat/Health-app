@@ -5,8 +5,10 @@ const messages = commonfunctions.customMessages();
 const env = require("../../env");
 const mongoose= require("mongoose");
 const otpModel = require("../../Models/UserModels/OtpModel");
+const e = require("express");
 require("dotenv").config();
 var appCred = require("../../config/appcredentials")[env.instance];
+// console.log(appCred.baseUrl,"the shit",env)
 
 const getHashedPassword = (password) => {
   const sha256 = lib.crypto.createHash("sha256");
@@ -256,8 +258,8 @@ module.exports = {
         const transporter = lib.nodemailer.createTransport({
           service: "gmail",
           auth: {
-            user: "infoemailscheck@gmail.com",
-            pass: "umknzzuboyobshme",
+            user: "cusatproject2023@gmail.com",
+            pass: "oqekxaavbjhzdjfz",
           },
           tls: {
             rejectUnauthorized: false,
@@ -271,13 +273,13 @@ module.exports = {
           _id:user._id
         };
         var mailOptions = {
-          from: "Infoemailscheck@gmail.com",
+          from: "cusatproject2023@gmail.com",
           to: user.email,
           subject: "email verifiction ",
           template: "emailverification",
           context: {
             link: `${link}`,
-            text1: `Hi, ${user.user_name} You have successfully created an account on Tapplist App with ${user.email}`,
+            text1: `Hi, ${user.user_name} You have successfully created an account on Health App with ${user.email}`,
             text2:
               "Please click on the link below Or copy paste this link in to your browser to verify your email",
           },
@@ -733,6 +735,127 @@ module.exports = {
       return res.status(200).send(response);
     } catch (e) {
       logger.error(e)
+      return res.json({
+        status: false,
+        code: 201,
+        message: messages.ANNONYMOUS,
+      });
+    }
+  },
+  updateProfile:async(req,res)=>{
+    var body=req.body
+    try {
+      var user = await lib.userModel.findOne({accessToken:req.headers["x-token"]})    
+    } catch (e) {
+      logger.error(e)
+      return res.json({
+        status: false,
+        code: 201,
+        message: messages.ANNONYMOUS,
+      });
+    }
+
+    try {
+      if(user){
+    
+        var data = {
+          user_name:body.user_name=="" ? user.user_name:body.user_name,
+          contact:body.contact =="" ? user.contact:body.contact,
+          profilePhoto: body.file=="" ? user.profilePhoto: body.file,
+          bio:body.bio=="" ? user.bio:body.bio,
+          category:body.category=="" ? user.category : body.category,
+          email:body.email=="" ? user.email:body.email
+        }
+  
+        var updatedUserdata = await lib.userModel.findByIdAndUpdate({_id:user._id},data,{new:true});
+        delete updatedUserdata.password;
+        var response= commonfunctions.checkRes(updatedUserdata);
+        response.message=messages.UPDATE;
+        delete response.results.password
+        logger.info(
+          `${req.url},${req.method},${req.hostname},${JSON.stringify(
+            response.status
+          )}`
+        );
+        return res.status(200).send(response);
+  
+      }
+    } catch (e) {
+      logger.error(e)
+      return res.json({
+        status: false,
+        code: 201,
+        message: messages.ANNONYMOUS,
+      });
+    }
+    
+    
+  },
+
+  booking_request:async(req,res)=>{
+    var body= req.body;
+    try {
+      var user= await lib.userModel.findOne({accessToken:req.headers["x-token"]})
+    } catch (e) {
+      logger.error(e)
+      return res.json({
+        status: false,
+        code: 201,
+        message: messages.ANNONYMOUS,
+      });
+    }
+
+    try {
+      var data ={
+        userId:user._id,
+        date:body.date,
+        doctorId:body.doctorId
+      }
+      var request_send= new lib.bookingModel(data)
+      request_send.save()
+      var response= commonfunctions.checkRes(request_send);
+      response.message="Request send successfully";
+      logger.info(
+        `${req.url},${req.method},${req.hostname},${JSON.stringify(
+          response.status
+        )}`
+      );
+      return res.status(200).send(response);
+      
+    } catch (e) {
+      logger.error(e)
+      return res.json({
+        status: false,
+        code: 201,
+        message: messages.ANNONYMOUS,
+      })
+    }
+  },
+
+  accept_or_decline:async(req,res)=>{
+    var body= req.body;
+    try {
+      var user= await lib.userModel.findOne({accessToken:req.headers["x-token"]})
+    } catch (e) {
+      logger.error(e)
+      return res.json({
+        status: false,
+        code: 201,
+        message: messages.ANNONYMOUS,
+      });
+    }
+    var checkForRequest= await lib.bookingModel.find({$and:[{_id:body.requestId},{doctorId:user._id}]})
+    if(checkForRequest.length>0 && checkForRequest[0].type=="0" && (body.type=="1" || body.type =="2")){
+        var updateRequest= await lib.bookingModel.findOneAndUpdate({_id:body.requestId},{type:body.type})
+        var response= commonfunctions.checkRes(updateRequest);
+        response.message=body.type=="1" ? "Request accepted":"Cancelled the request"
+        logger.info(
+          `${req.url},${req.method},${req.hostname},${JSON.stringify(
+            response.status
+          )}`
+        );
+        return res.status(200).send(response);
+    }else{
       return res.json({
         status: false,
         code: 201,

@@ -32,7 +32,10 @@ var userSchema = mongoose.Schema({
   isEmailVerified:{type:Boolean,default:false},
   location: pointSchema,
   accessToken:{type:String,default:""},
-  isOnline:{type:Boolean,default:true}
+  isOnline:{type:Boolean,default:true},
+  category:{type:mongoose.Types.ObjectId,refer:"categorys"},
+  profilePhoto:{type:String,default:""},
+  bio:{type:String,default:""}
 });
 userSchema.index({ location: "2dsphere" });
 var userModel = mongoose.model("user", userSchema);

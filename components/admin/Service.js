@@ -109,4 +109,38 @@ module.exports = {
         });
     }
   },
+  createCategory:async(req,res)=>{
+    var body= req.body
+    try {
+      var checkCategory= await lib.categoryModel.find({category:{"$regex":body.category}})
+      if(checkCategory.length>0){
+        return res.json({
+          status: false,
+          code: 201,
+          message: `${body.category} exists`,
+        });
+      }else{
+         var newCategory= new lib.categoryModel({
+          category:body.category,
+          image:body.image
+         })
+         newCategory.save();
+         var response = commonfunctions.checkRes(newCategory);
+          response.message="category created successfully"
+          logger.info(
+              `${req.url},${req.method},${req.hostname},${JSON.stringify(
+              response.status
+              )}`
+          );
+          return res.status(200).send(response);
+      }
+    } catch (e) {
+      logger.error(e);
+      return res.json({
+        status: false,
+        code: 201,
+        message: messages.ANNONYMOUS,
+      });      
+    }
+  }
 };

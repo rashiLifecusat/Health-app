@@ -2,7 +2,7 @@
  * @file: server.js
  * @description: This is the main file of project All files are configure here
  * @date: 20/10/2022
- * @author: vipin
+ * @author: rashi and team
  */
 require("dotenv").config();
 // require("../MERN")
@@ -56,6 +56,8 @@ app.engine('hbs', lib.hbs.engine({
     defaultLayout: 'main',
     layoutsDir: __dirname + '/views/layouts/',
   }))
+
+app.use(lib.express.static(lib.path.join(__dirname, '/public/')));
 
 server.listen(appCred.port, (err) => {
   if (err) {

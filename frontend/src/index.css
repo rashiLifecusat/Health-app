@@ -1,0 +1,34 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: url("./images/cool-background.png") no-repeat center fixed;
+  background-size: cover;
+  /* background: */
+  /* background-image:{
+    width: "auto";
+  } */
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+
+.MuiPaper-root.MuiPaper-elevation.MuiPaper-elevation4.MuiAppBar-root.MuiAppBar-colorPrimary.MuiAppBar-positionStatic.healthapp {
+  background: radial-gradient(circle at top right, #3d5656, #ebc249);
+}
+.search {
+  margin-right: 3px;
+}
+.MuiSvgIcon-root.MuiSvgIcon-fontSizeMedium {
+}
+
+.healthapp_navbar.MuiBox-root {
+  position: sticky !important;
+  top: 0px !important;
+  z-index: 1 !important;
+}

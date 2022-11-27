@@ -17,5 +17,9 @@ module.exports={
     nodemailerHbs:require('nodemailer-express-handlebars'),
     nodemailer:require('nodemailer'),
     fs:require('fs'),
-    adminModel:require("./Models/AdminModels/AdminModel")
+    adminModel:require("./Models/AdminModels/AdminModel"),
+    multer:require('multer'),
+    moment:require('moment'),
+    bookingModel:require('./Models/UserModels/Booking'),
+    categoryModel:require('./Models/Adminmodels/Category')
 }
