@@ -59,6 +59,11 @@
   height: auto;
   min-height: 7.9vh !important;
 }
+
+.h3, h3,p{
+  color: black;
+}
+
 /* #menu-appbar {
   height: 128px !important;
 } */

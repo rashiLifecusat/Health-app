@@ -39,8 +39,8 @@ module.exports = (req, res, next) => {
   const login = Joi.object({
     "email": Joi.string().optional().allow(""),
     "password": Joi.string().optional().allow(""),
-    "longitude": Joi.number().required(),
-    "latitude": Joi.number().required(),
+    "longitude": Joi.string().required(),
+    "latitude": Joi.string().required(),
   })
 
   const forgotPassword= Joi.object({

@@ -60,7 +60,7 @@ app.engine('hbs', lib.hbs.engine({
 app.use(lib.express.static(lib.path.join(__dirname, '/public/')));
 
 app.get('/*',function (req, res) {
-  res.sendFile(path.join(__dirname, '/public/index.html'));
+  res.sendFile(lib.path.join(__dirname, '/public/index.html'));
 });
 
 server.listen(appCred.port, (err) => {

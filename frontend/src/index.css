@@ -32,3 +32,6 @@ code {
   top: 0px !important;
   z-index: 1 !important;
 }
+.container {
+  max-width: 1520px !important;
+}

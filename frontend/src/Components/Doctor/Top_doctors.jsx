@@ -11,9 +11,9 @@ function Top_doctors() {
           src="https://wallpapercave.com/wp/wp2789228.jpg"
           alt="First slide"
         />
-        <Carousel.Caption>
-          <h3>First slide label</h3>
-          <p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
+        <Carousel.Caption style={{color:"black"}}>
+          <h3 style={{color:"black"}}>First slide label</h3>
+          <p style={{color:"black"}}>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
         </Carousel.Caption>
       </Carousel.Item>
       <Carousel.Item>
@@ -23,9 +23,9 @@ function Top_doctors() {
           alt="Second slide"
         />
 
-        <Carousel.Caption>
-          <h3>Second slide label</h3>
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        <Carousel.Caption style={{color:"black"}}>
+          <h3 style={{color:"black"}}>Second slide label</h3>
+          <p style={{color:"black"}}>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
         </Carousel.Caption>
       </Carousel.Item>
       <Carousel.Item>
@@ -35,9 +35,9 @@ function Top_doctors() {
           alt="Third slide"
         />
 
-        <Carousel.Caption>
-          <h3>Third slide label</h3>
-          <p>
+        <Carousel.Caption style={{color:"black"}}>
+          <h3 style={{color:"black"}}>Third slide label</h3>
+          <p style={{color:"black"}}>
             Praesent commodo cursus magna, vel scelerisque nisl consectetur.
           </p>
         </Carousel.Caption>

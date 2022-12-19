@@ -45,8 +45,8 @@ export default function Register() {
   const Register = () => {
     var data=user
     data.role=value
-    data.latitude=latitude
-    data.longitude=longitude
+    data.latitude=latitude.toString()
+    data.longitude=longitude.toString()
     console.log(data,"the data is here")
     axios.post(Server.Server.serverForOthers.link+"/user/generateOTP",data).then((res)=>{
      

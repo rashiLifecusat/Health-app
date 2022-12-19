@@ -33,8 +33,8 @@ function Login() {
   };
   const submitLogin=()=>{
     var data=user
-    data.longitude=longitude
-    data.latitude=latitude
+    data.longitude=longitude.toString()
+    data.latitude=latitude.toString()
     axios.post(Server.Server.serverForOthers.link+"/user/login",data).then((res)=>{
       console.log("res")
       if(res.data.code===200){

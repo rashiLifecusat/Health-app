@@ -212,8 +212,8 @@ module.exports = {
         message: messages.ANNONYMOUS,
       });
     }
-    var longitude = parseFloat(body.longitude);
-    var latitude = parseFloat(body.latitude);
+    var longitude = parseInt(body.longitude);
+    var latitude = parseInt(body.latitude);
     let data = {
       user_name: body.user_name,
       email: body.email,
