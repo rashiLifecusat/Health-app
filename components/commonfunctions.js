@@ -60,7 +60,7 @@ module.exports = {
       ACOOUNT_BLOCKED:
         "An administrator has blocked you from running this app. For more information please contact the “appinfo.profession@gmail.com” administrator",
       OLD_PASSWORD: "The old password you have entered is incorrect.",
-      ENV: "This email is not verified",
+      ENV: "This email is not verified We send you the verification link to your mail",
       OTP_VERIFIED:"OTP verified",
       OTP_MAIL:"Otp send to your email",
       LOGG_OUT:"Logged out successfully"

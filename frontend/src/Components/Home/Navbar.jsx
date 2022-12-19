@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { styled, alpha } from "@mui/material/styles";
+
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -19,6 +20,7 @@ import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import RestoreIcon from '@mui/icons-material/Restore';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
+import { useNavigate} from 'react-router-dom'
 import {
   Button,
   Drawer,
@@ -36,6 +38,7 @@ import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import PolicyIcon from '@mui/icons-material/Policy';
 import QuizIcon from '@mui/icons-material/Quiz';
 import CloseIcon from '@mui/icons-material/Close';
+import Chat from "@mui/icons-material/Chat";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -89,7 +92,12 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   }));
 
 function Navbar() {
-  const [auth, setAuth] = useState(true);
+  // var history=useNavigate()
+  const [auth, setAuth] = useState(false);
+  var authentication=localStorage.getItem("auth")
+  if(authentication===true){
+    setAuth(true)
+  }
   const [anchorEl, setAnchorEl] = useState(null);
   const [open, setOpen] = useState(false);
   console.log(auth, "this is auth");
@@ -108,6 +116,10 @@ function Navbar() {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  // const redirectTo=()=>{
+  //   history("/Signin")
+  // }
 
   return (
     <>
@@ -166,12 +178,13 @@ function Navbar() {
                   open={Boolean(anchorEl)}
                   onClose={handleClose}
                 >
-                  <MenuItem onClick={handleClose}>Profile</MenuItem>
                   <MenuItem onClick={handleClose}>My account</MenuItem>
+                  <MenuItem onClick={handleClose}>Log out</MenuItem>
                 </Menu>
               </div>
             ) : (
-              <Button variant="outlined">Login</Button>
+              ""
+              // <Button variant="outlined" >Login</Button>""
             )}
           </Toolbar>
           
@@ -182,7 +195,7 @@ function Navbar() {
                 <CloseIcon/>
           </IconButton>
           <Typography component="div" sx={{ flexGrow: 1 }}>
-              <img src={logo} style={{ width: "50px", height: "50px" }} />
+              {/* <img src={logo} style={{ maxWidth: "50px", height: "50px" }} /> */}
               HEALTH APP
             </Typography>
         </DrawerHeader>
@@ -203,6 +216,23 @@ function Navbar() {
                 <ListItemText primary="Profile Management" />
               </ListItemButton>
             </ListItem>
+            <ListItem disablePadding>
+              <ListItemButton>
+                <ListItemIcon>
+                <Chat/>
+                </ListItemIcon>
+                <ListItemText primary="Messages" />
+              </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding>
+              <ListItemButton>
+                <ListItemIcon>
+                <FavoriteIcon/>
+                </ListItemIcon>
+                <ListItemText primary="Favorites" />
+              </ListItemButton>
+            </ListItem>
+            
             <ListItem disablePadding>
               <ListItemButton>
                 <ListItemIcon>

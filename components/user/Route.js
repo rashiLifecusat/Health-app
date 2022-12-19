@@ -24,7 +24,7 @@ router.post("/user/generateOTP",joiValidation,userService.generateOtp);
 router.post('/user/resendOTP',joiValidation,userService.resendOtp);
 router.post('/user/verifyOTP',joiValidation,userService.verifyOTP);
 router.get('/user/emailverify/:id/:token',userService.emailVerified);
-router.post('/user/register',joiValidation,userService.register);
+router.post('/user/register',userService.register);
 router.post('/user/login',joiValidation,userService.login);
 router.post('/user/forgotPassword',joiValidation,userService.forgotPassword);
 router.post('/user/verifyEmailOtp',joiValidation,userService.verifyEmailOtp);
@@ -34,6 +34,7 @@ router.post('/user/logout',userService.logOut);
 router.post('/user/updateProfile',isAuthenticated,profileUpload.single('file'),userService.updateProfile);
 router.post('/user/booking_request',isAuthenticated,userService.booking_request)
 router.post('/user/accept_or_decline',isAuthenticated,userService.accept_or_decline)
+
 
 router.get('/user/testApi',async(req,res)=>{
     res.render('linkexpired')
@@ -81,6 +82,20 @@ async function isAuthenticated(req,res,next) {
  *             properties:
  *              email:
  *                type: string
+ *              contact:
+ *                type: string
+ *              countryCode:
+ *                type: string         
+ *              user_name:
+ *                type: string
+ *              password:
+ *                type: string
+ *              longitude:
+ *                type: string   
+ *              latitude:
+ *                type: string   
+ *              role:
+ *                type: string  
  *     responses:
  *       200:
  *         description: user login
@@ -157,29 +172,12 @@ async function isAuthenticated(req,res,next) {
  *     summary: Please use this api after the otp verification
  *     description: required fields are user_name email password longitude latitude device_Token device_type app_version device_model
  *     tags: [users]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *              contact:
- *                type: string
- *              countryCode:
- *                type: string         
- *              user_name:
- *                type: string
- *              email:
- *                type: string
- *              password:
- *                type: string
- *              longitude:
- *                type: string   
- *              latitude:
- *                type: string   
- *              role:
- *                type: string  
+ *     parameters:
+ *      - in: header
+ *        name: x_token
+ *        schema:
+ *          type: string
+ *        required: true  
  *     responses:
  *       200:
  *         description: user login

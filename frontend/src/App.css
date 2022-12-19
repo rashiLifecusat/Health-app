@@ -44,6 +44,25 @@
   display: none;
 }
 
+.MuiList-root.MuiList-padding{
+  max-width: 100%;
+  height: 100vh;
+}
+.MuiList-padding.MuiList-root.MuiMenu-list{
+ height: 96px !important;
+}
+
+.MuiGrid-grid-xs-12{
+  flex-grow: 0;
+  max-width: 100%;
+  flex-basis: 100%;
+  height: auto;
+  min-height: 7.9vh !important;
+}
+/* #menu-appbar {
+  height: 128px !important;
+} */
+
 /* a.carousel-control-prev{
   display: none;
 

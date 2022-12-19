@@ -4,6 +4,13 @@ module.exports = (req, res, next) => {
     email: Joi.string()
       .email({ tlds: { allow: false } })
       .required(),
+      user_name:Joi.string().required(),
+      password: Joi.string().required(),
+      contact: Joi.string().optional().allow(""),
+      countryCode: Joi.string().optional().allow(""),
+      longitude:Joi.number().optional().allow(""),
+      latitude:Joi.number().optional().allow(""),
+      role: Joi.string().optional().allow("")
   });
 
   const resendOtpSchema= Joi.object({
@@ -32,8 +39,8 @@ module.exports = (req, res, next) => {
   const login = Joi.object({
     "email": Joi.string().optional().allow(""),
     "password": Joi.string().optional().allow(""),
-    "longitude": Joi.string().required(),
-    "latitude": Joi.string().required(),
+    "longitude": Joi.number().required(),
+    "latitude": Joi.number().required(),
   })
 
   const forgotPassword= Joi.object({
@@ -65,11 +72,12 @@ module.exports = (req, res, next) => {
     stripUnknown: true, // remove unknown props
   };
 
+  console.log("kkk",req.body)
   // paths
   if (req.path == "/user/generateOTP") var { error, value } = otpScheama.validate(req.body, options);
   if (req.path == "/user/resendOTP") var { error, value } = resendOtpSchema.validate(req.body, options);
   if (req.path == "/user/verifyOTP") var { error, value } = verifyOtp.validate(req.body, options);
-  if (req.path == "/user/register") var { error, value } = register.validate(req.body, options);
+  // if (req.path == "/user/register") var { error, value } = register.validate(req.body, options);
   if (req.path == "/user/login") var { error, value } = login.validate(req.body, options);
   if (req.path == "/user/forgotPassword") var { error, value } = forgotPassword.validate(req.body, options);
   if (req.path == "/user/verifyEmailOtp") var { error, value } = emailOtp.validate(req.body, options);

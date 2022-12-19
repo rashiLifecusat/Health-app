@@ -8,7 +8,7 @@ function Top_doctors() {
       <Carousel.Item>
         <img
           className="d-block w-100"
-          src="https://i.pinimg.com/originals/a2/fe/21/a2fe21da9ce7d1698f5b48cdb506c853.jpg"
+          src="https://wallpapercave.com/wp/wp2789228.jpg"
           alt="First slide"
         />
         <Carousel.Caption>
@@ -19,7 +19,7 @@ function Top_doctors() {
       <Carousel.Item>
         <img
           className="d-block w-100"
-          src="https://i.pinimg.com/originals/a2/fe/21/a2fe21da9ce7d1698f5b48cdb506c853.jpg"
+          src="https://wallpapercave.com/wp/wp2789215.jpg"
           alt="Second slide"
         />
 
@@ -31,7 +31,7 @@ function Top_doctors() {
       <Carousel.Item>
         <img
           className="d-block w-100"
-          src="https://i.pinimg.com/originals/a2/fe/21/a2fe21da9ce7d1698f5b48cdb506c853.jpg"
+          src="https://wallpapercave.com/wp/wp2789194.jpg"
           alt="Third slide"
         />
 

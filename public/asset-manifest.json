@@ -1,0 +1,16 @@
+{
+  "files": {
+    "main.css": "/static/css/main.676fb5b9.css",
+    "main.js": "/static/js/main.d466cb13.js",
+    "static/media/HP.png": "/static/media/HP.976a7a8d4e0bd7959996.png",
+    "static/media/cool-background.png": "/static/media/cool-background.22fd542bf4d4b0f2294a.png",
+    "static/media/DefaultDoctor.png": "/static/media/DefaultDoctor.a6837091ee56c99d64f7.png",
+    "index.html": "/index.html",
+    "main.676fb5b9.css.map": "/static/css/main.676fb5b9.css.map",
+    "main.d466cb13.js.map": "/static/js/main.d466cb13.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.676fb5b9.css",
+    "static/js/main.d466cb13.js"
+  ]
+}

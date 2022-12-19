@@ -8,7 +8,8 @@ const otpModel = require("../../Models/UserModels/OtpModel");
 const e = require("express");
 require("dotenv").config();
 var appCred = require("../../config/appcredentials")[env.instance];
-// console.log(appCred.baseUrl,"the shit",env)
+// var a=lib.jwt.verify("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im5jeW95c2g5MzVAY291bGRtYWlsLmNvbSIsImNvbnRhY3QiOiIxMjMzNDQ0IiwiY291bnRyeUNvZGUiOiIxIiwidXNlcl9uYW1lIjoiaGV5IiwicGFzc3dvcmQiOiIxMjMzNDU1Njc4OCIsImxvbmdpdHVkZSI6IjEyLjAiLCJsYXRpdHVkZSI6IjEzLjAiLCJyb2xlIjoic3RyaW5nIiwiaWF0IjoxNjcxMzA4NTE1fQ.TgvQj-TH6B9uh0V11q11Il4WrpyDnvV9A2A4zVezkb0",process.env.JWT_SECRET)
+// console.log(a,"data is here")
 
 const getHashedPassword = (password) => {
   const sha256 = lib.crypto.createHash("sha256");
@@ -19,6 +20,7 @@ const getHashedPassword = (password) => {
 module.exports = {
   generateOtp: async (req, res) => {
     var body = req.body;
+    console.log(body,"1111")
     try {
       const email = body.email || "";
       const verifiedEmail = await lib.userModel.find({
@@ -44,6 +46,7 @@ module.exports = {
       };
       var newOtp = new lib.otpModel(otpData);
       newOtp.save();
+      var token= lib.jwt.sign(body, process.env.JWT_SECRET);
       var templatePath = lib.path.join(__dirname, "../../Templates");
         const handlebarsOptions = {
           viewEngine: {
@@ -95,6 +98,7 @@ module.exports = {
       var response = commonfunctions.checkRes(otpData);
       response.message = messages.OTP_SENT;
       response.otp = otpData.otp;
+      response.returnToken=token;
       delete response.results;
       logger.info(
         `${req.url},${req.method},${req.hostname},${JSON.stringify(
@@ -182,7 +186,7 @@ module.exports = {
   },
 
   register: async (req, res) => {
-    var body = req.body;
+    var body = lib.jwt.verify(req.headers["x_token"],process.env.JWT_SECRET)
     try {
       var email = await lib.userModel.aggregate([
         {
@@ -395,6 +399,61 @@ module.exports = {
         });
       }
       if (user.isEmailVerified == false && checkEmail==true) {
+        var extoken = lib.jwt.sign(
+          { email: user.email },
+          process.env.JWT_SECRET,
+          { expiresIn: "1hr" }
+        );
+        const link = `${appCred.baseUrl}/user/emailverify/${user._id}/${extoken}`;
+
+        var templatePath = lib.path.join(__dirname, "../../Templates");
+        const handlebarsOptions = {
+          viewEngine: {
+            extName: ".hbs",
+            partialsDir: templatePath,
+            defaultLayout: false,
+          },
+          viewPath: templatePath,
+          extName: ".hbs",
+        };
+        const transporter = lib.nodemailer.createTransport({
+          service: "gmail",
+          auth: {
+            user: "cusatproject2023@gmail.com",
+            pass: "oqekxaavbjhzdjfz",
+          },
+          tls: {
+            rejectUnauthorized: false,
+          },
+        });
+
+        transporter.use("compile", lib.nodemailerHbs(handlebarsOptions));
+        var user = {
+          user_name: body.email,
+          email:user.email ,
+          _id:user._id
+        };
+        var mailOptions = {
+          from: "cusatproject2023@gmail.com",
+          to: user.email,
+          subject: "email verifiction ",
+          template: "emailverification",
+          context: {
+            link: `${link}`,
+            text1: `Hi, ${user.user_name} You have successfully created an account on Health App with ${user.email}`,
+            text2:
+              "Please click on the link below Or copy paste this link in to your browser to verify your email",
+          },
+        };
+        transporter.sendMail(mailOptions, function (error, info) {
+          if (error) {
+            logger.error(JSON.stringify(error));
+            // console.log(error, "err");
+          } else {
+            logger.info(JSON.stringify(info));
+            // console.log("Email sent:" + info.response);
+          }
+        });
         return res.json({
           status: false,
           code: 202,
