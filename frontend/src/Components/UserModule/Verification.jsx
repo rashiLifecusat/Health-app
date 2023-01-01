@@ -46,8 +46,9 @@ function Verification() {
                           // if(role==="Doctor"){
                             toast.success(res.data.message)
                             history("/Requests")
+                            window.location.reload()
                           // }
-                        },3000)
+                        },1000)
 
                       }else if(res.data.results.role==="User"){
                         localStorage.setItem("token",res.data.results.accessToken)
@@ -56,8 +57,9 @@ function Verification() {
                           // if(role==="User"){
                             toast.success(res.data.message)
                             history("/")
+                            window.location.reload() 
                           // }
-                        },3000)
+                        },1000)
                         // if(role==="User"){
                         //   history("/")
                         // }else if(role==="Doctor"){

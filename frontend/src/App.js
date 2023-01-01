@@ -14,6 +14,9 @@ import DoctorProute from "./Components/Authentication/DoctorAuth";
 import DoctorHome from "./Components/Doctor/DoctorHome";
 import Userupdate from "./Components/UserModule/Userupdate";
 import UpdateDoc from "./Components/Doctor/UpdateDoc";
+import UserRequests from "./Components/UserModule/UserRequests";
+import Favourites from "./Components/UserModule/Favourites";
+import ForgotPassword from "./Components/UserModule/ForgotPassword";
 
 function App() {
   return (
@@ -21,6 +24,7 @@ function App() {
   <Routes>
   <Route path="/Signup" element={<Register/>}/>
     <Route path="/Signin" element={<Login/>}/>
+    <Route path="/Forgot" element={<ForgotPassword/>}/>
     
     <Route path="/VerifyOtp" element={<Verification/>}/>
       <Route element={<DoctorProute/>}>
@@ -32,6 +36,8 @@ function App() {
       <Route path="/chat" element={<Chat/>}/>
       <Route path="/inbox" element={<Inbox/>}/>
       <Route path="/userupdate" element={<Userupdate/>}/>
+      <Route path="/requestStatus" element={<UserRequests/>}/>
+      <Route path="/Favourites" element={<Favourites/>}/>
       </Route>
    
   

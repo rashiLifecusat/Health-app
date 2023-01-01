@@ -10,6 +10,8 @@ function Top_doctors() {
           className="d-block w-100"
           src="https://wallpapercave.com/wp/wp2789228.jpg"
           alt="First slide"
+          style={{minHeight: "600px",
+          maxHeight: "600px"}}
         />
         <Carousel.Caption style={{color:"black"}}>
           <h3 style={{color:"black"}}>First slide label</h3>
@@ -21,6 +23,8 @@ function Top_doctors() {
           className="d-block w-100"
           src="https://wallpapercave.com/wp/wp2789215.jpg"
           alt="Second slide"
+          style={{minHeight: "600px",
+          maxHeight: "600px"}}
         />
 
         <Carousel.Caption style={{color:"black"}}>
@@ -33,6 +37,8 @@ function Top_doctors() {
           className="d-block w-100"
           src="https://wallpapercave.com/wp/wp2789194.jpg"
           alt="Third slide"
+          style={{minHeight: "600px",
+          maxHeight: "600px"}}
         />
 
         <Carousel.Caption style={{color:"black"}}>

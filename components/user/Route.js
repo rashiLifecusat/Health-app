@@ -26,13 +26,16 @@ router.post('/user/verifyOTP',joiValidation,userService.verifyOTP);
 router.get('/user/emailverify/:id/:token',userService.emailVerified);
 router.post('/user/register',userService.register);
 router.post('/user/login',joiValidation,userService.login);
-router.post('/user/forgotPassword',joiValidation,userService.forgotPassword);
+router.post('/user/forgotPassword',joiValidation,userService.forgottPassword);
 router.post('/user/verifyEmailOtp',joiValidation,userService.verifyEmailOtp);
+router.get('/user/changePasswordview',userService.getChangePasswordView)
+router.post('/user/changePasswordview',userService.submitNewPassword)
 router.post('/user/newPassword',joiValidation,userService.newPassword);
 router.post('/user/resetPassword',joiValidation,userService.resetPassword);
 router.post('/user/logout',userService.logOut);
 router.post('/user/updateProfile',isAuthenticated,profileUpload.single('file'),userService.updateProfile);
 router.get('/user/getUser',isAuthenticated,userService.getUser)
+router.post("/user/addFavRemove",isAuthenticated,userService.addOrRemove)
 // router.post('/user/updateProfile',profileUpload.single('file'),async(req,res)=>{
 //     console.log(req.body,",,,,,,")
 // });
@@ -41,6 +44,8 @@ router.post('/user/booking_request',isAuthenticated,joiValidation,userService.bo
 router.post('/user/accept_or_decline',isAuthenticated,userService.accept_or_decline)
 router.get('/user/usersHome',isAuthenticated,userService.home)
 router.get('/user/getRequestsforUser',isAuthenticated,userService.getRequestForUser)
+router.get("/user/getstatusForusers",isAuthenticated,userService.getstatusForusers)
+router.get("/user/fav",isAuthenticated,userService.fav)
 
 
 router.get('/user/testApi',async(req,res)=>{

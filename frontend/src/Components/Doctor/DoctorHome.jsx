@@ -40,7 +40,6 @@ function DoctorHome() {
   console.log(data, "....s....");
   useEffect(() => {
     fetchData(value);
-
   }, []);
 
   const fetchData = async (value) => {
@@ -58,6 +57,7 @@ function DoctorHome() {
         } else if (res.data.code === 201) {
           toast.error(res.data.message);
         } else {
+          setValue(value)
           setData(res.data.data);
           // toast.success(res.data.message);
         }
@@ -75,7 +75,7 @@ function DoctorHome() {
           },
           { headers: { "x-token": token } }
         )
-        .then((res) => {
+        .then(async(res) => {
           if (res.data.code === 203) {
             localStorage.clear();
             history("/Signin");
@@ -84,7 +84,25 @@ function DoctorHome() {
             toast.error(res.data.message);
           } else {
             toast.success(res.data.message);
-            fetchData();
+            // fetchData();
+            await axios
+            .get(Server.Server.serverForOthers.link + "/user/getRequestsforUser", {
+              params:{type:value},headers: { "x-token": token },
+            })
+            .then((res) => {
+              console.log(res, "this is the response...", res.data.data);
+              if (res.data.code === 203) {
+                toast.error(res.data.message);
+                localStorage.clear();
+                history("/Signin");
+              } else if (res.data.code === 201) {
+                toast.error(res.data.message);
+              } else {
+                setValue(value)
+                setData(res.data.data);
+                // toast.success(res.data.message);
+              }
+            });
           }
         });
     } catch (e) {
@@ -207,7 +225,7 @@ function DoctorHome() {
             </Col>
             <Col sm={4}>
               {data.date===moment().valueOf() ? (<>
-                <IconButton aria-label="chat">
+                <IconButton aria-label="chat" onClick={()=>`https://wa.me/${data.conatct}`}>
                   <ChatBubbleOutlineIcon />
                 </IconButton>
               </>):(<><Tooltip title="Available at the date"><SpeakerNotesOffIcon/></Tooltip></>)}

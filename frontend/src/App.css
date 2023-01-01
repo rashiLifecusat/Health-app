@@ -78,3 +78,10 @@
   margin: 6px !important;
   width: 99% !important;
 }
+a.carousel-control-prev,.carousel-control-next{
+  display: none !important;
+}
+
+/* .carousel-control-next{
+
+} */

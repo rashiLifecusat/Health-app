@@ -48,146 +48,124 @@ import { useNavigate } from "react-router-dom";
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
-const token =localStorage.getItem("token")
-function Home() {
-  const history=useNavigate()
-  const [value, setValue] = React.useState("recents");
-  const [dateValue, onChange] = useState(new Date());
-  const [data, setData] = useState([]);
-  const [single, setSingle] = React.useState({});
-  const [skip,setSkip] = useState(0)
-  const [limit,setLimit] =useState(5)
-  const [totalDoc,setTotalDoc] = useState(0)
-  useEffect(() => {
-    fetchData();
-    
-  }, []);
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
-  console.log(single,"lllll")
 
-  const fetchData=()=>{
-    
-    axios
-      .get(Server.serverForOthers.link+"/user/usersHome", {
-        params:{skip:skip,limit:limit},headers: { "x-token":  token},
-      })
-      .then((res) => {
-        // console.log(res.data.data,"this is the res")
-        console.log(res.data.data,"this is the single")
-        setData(res.data.data);
-        setTotalDoc(res.data.totalDoc)
-      }); 
-  }
-  const fetchMoreData = () => {
-    console.log(skip+1,"jjjjjjjj")
-    var a = skip+1
-    console.log(a,"jjjj")
-    // setSkip(skip+1)
-    axios
-      .get(Server.serverForOthers.link+"/user/usersHome", {
-        params:{skip:a,limit:limit},headers: { "x-token":  token},
-      })
-      .then((res) => {
-        var newArray=data.concat(res.data.data)
-        console.log(newArray,"this is the res")
-        setData(newArray);
-        setTotalDoc(res.data.totalDoc)
-      });
-  };
-    
-
-  const [open, setOpen] = React.useState(false);
-  // const [requestOpen, setRequestOpen] = React.useState(false);
-
-  const handleClickOpen = (id) => {
-    setOpen(true);
-    data.map((row) => {
-      if (row._id === id) {
-        return setSingle(row);
-      }
-    });
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  const sendRequest = (id) => {
-    try {
-      if (dateValue === NaN) {
-        toast.error("Select a date");
-      } else {
-        var data = {
-          doctorId: id,
-          date: moment(dateValue).valueOf(),
-        };
-        axios
-          .post(Server.serverForOthers.link + "/user/booking_request", data, {
-            headers: { "x-token": localStorage.getItem("token") },
-          })
-          .then((res) => {
-            console.log(res, "hey you response");
-            if (res.data.code === 201) {
-              toast.error("Select any date");
-            } else if (res.data.code === 202) {
-              toast.error(res.data.message);
-            } else {
-              toast.success(res.data.message);
-            }
-          });
-      }
-    } catch (e) {
-      toast.error("Something went wrong !");
+function Favourites() {
+    var token= localStorage.getItem("token")
+    const history=useNavigate()
+    const [value, setValue] = React.useState("recents");
+    const [dateValue, onChange] = useState(new Date());
+    const [data, setData] = useState([]);
+    const [single, setSingle] = React.useState({});
+    const [skip,setSkip] = useState(0)
+    const [limit,setLimit] =useState(5)
+    const [totalDoc,setTotalDoc] = useState(0)
+    useEffect(() => {
+      fetchData();
+      
+    }, []);
+    const handleChange = (event, newValue) => {
+      setValue(newValue);
+    };
+    console.log(single,"lllll")
+  
+    const fetchData=()=>{
+      
+      axios
+        .get(Server.serverForOthers.link+"/user/fav", {
+          params:{skip:skip,limit:limit},headers: { "x-token":  token},
+        })
+        .then((res) => {
+          // console.log(res.data.data,"this is the res")
+          console.log(res.data.data,"this is the single")
+          setData(res.data.data);
+          setTotalDoc(res.data.totalDoc)
+        }); 
     }
-  };
-  console.log(data,"this is the single")
-
-  const addOrRemoveFav=(id)=>{
-    console.log("id,,,,,,,",id)
-    axios.post(Server.serverForOthers.link +"/user/addFavRemove",{id:id},{headers:{"x-token":token}}).then(async(res)=>{
-      if(res.data.code===200){
-       await axios
-      .get(Server.serverForOthers.link+"/user/usersHome", {
-        params:{skip:skip,limit:limit},headers: { "x-token":  token},
-      })
-      .then((res) => {
-        // console.log(res.data.data,"this is the res")
-        console.log(res.data.data,"this is the single")
-        setData(res.data.data);
-        setTotalDoc(res.data.totalDoc)
+    const fetchMoreData = () => {
+      console.log(skip+1,"jjjjjjjj")
+      var a = skip+1
+      console.log(a,"jjjj")
+      // setSkip(skip+1)
+      axios
+        .get(Server.serverForOthers.link+"/user/fav", {
+          params:{skip:a,limit:limit},headers: { "x-token":  token},
+        })
+        .then((res) => {
+          var newArray=data.concat(res.data.data)
+          console.log(newArray,"this is the res")
+          setData(newArray);
+          setTotalDoc(res.data.totalDoc)
+        });
+    };
+      
+  
+    const [open, setOpen] = React.useState(false);
+    // const [requestOpen, setRequestOpen] = React.useState(false);
+  
+    const handleClickOpen = (id) => {
+      setOpen(true);
+      data.map((row) => {
+        if (row._id === id) {
+          return setSingle(row);
+        }
       });
+    };
+  
+    const handleClose = () => {
+      setOpen(false);
+    };
+  
+    const sendRequest = (id) => {
+      try {
+        if (dateValue === NaN) {
+          toast.error("Select a date");
+        } else {
+          var data = {
+            doctorId: id,
+            date: moment(dateValue).valueOf(),
+          };
+          axios
+            .post(Server.serverForOthers.link + "/user/booking_request", data, {
+              headers: { "x-token": localStorage.getItem("token") },
+            })
+            .then((res) => {
+              console.log(res, "hey you response");
+              if (res.data.code === 201) {
+                toast.error("Select any date");
+              } else if (res.data.code === 202) {
+                toast.error(res.data.message);
+              } else {
+                toast.success(res.data.message);
+              }
+            });
+        }
+      } catch (e) {
+        toast.error("Something went wrong !");
       }
-    })
-    
-  }
+    };
+    console.log(data,"this is the single")
+  
+    const addOrRemoveFav=(id)=>{
+      console.log("id,,,,,,,",id)
+      axios.post(Server.serverForOthers.link +"/user/addFavRemove",{id:id},{headers:{"x-token":token}}).then(async(res)=>{
+        if(res.data.code===200){
+         await axios
+        .get(Server.serverForOthers.link+"/user/fav", {
+          params:{skip:skip,limit:limit},headers: { "x-token":  token},
+        })
+        .then((res) => {
+          // console.log(res.data.data,"this is the res")
+          console.log(res.data.data,"this is the single")
+          setData(res.data.data);
+          setTotalDoc(res.data.totalDoc)
+        });
+        }
+      })
+      
+    }
   return (
     <>
-      <Container>
-        <Row>
-          <Col
-            lg={3}
-            md={4}
-            sm={6}
-            style={{ width: "100%", marginTop: "1%", paddingBottom: "15px" }}
-          >
-            <Top_doctors />
-          </Col>
-        </Row>
-    { data ==undefined ? (
-      <>
-       <ReactLoading
-            type={"spokes"}
-            color={"rgb(9 167 167)"}
-            height={50}
-            width={50}
-          />
-          </>
-    ): (
-
-      <>
-        <InfiniteScroll
+       <InfiniteScroll
           dataLength={data.length}
           next={fetchMoreData}
           hasMore={data.length !==totalDoc}
@@ -200,7 +178,7 @@ function Home() {
           />
           </>}
         >
-          <Container>
+          <Container style={{marginTop:"15px"}}>
             <Row>
               {data.map((row) => (
                 <>
@@ -231,8 +209,8 @@ function Home() {
                           <ContactPageIcon style={{ marginRight: "2px" }} />{" "}
                           Learn More
                         </Button>
-                        <Button onClick={()=> addOrRemoveFav(row._id)} size="small">
-                          {row.isFavourite === true ?(<FavoriteIcon style={{ marginRight: "2px" , color:"red"}} />):(<FavoriteIcon style={{ marginRight: "2px" ,color:"black" }} />) }
+                        <Button style={{ color: row.isFavourite === false ? "black" :"red" }} onClick={()=> addOrRemoveFav(row._id)} size="small">
+                          {row.isFavourite == true ?(<FavoriteIcon style={{ marginRight: "2px" , color:"black"}} />):(<FavoriteIcon style={{ marginRight: "2px" ,color:"red" }} />) }
                           
                         </Button>
                       </CardActions>
@@ -243,43 +221,7 @@ function Home() {
             </Row>
           </Container>
         </InfiniteScroll>
-      </>
-    )}
-      
-
-        <Row>
-          <BottomNavigation
-            sx={{ width: 3050 }}
-            value={value}
-            onChange={handleChange}
-          >
-            <BottomNavigationAction
-              onClick={()=>history("/requestStatus")}
-              label="Requests"
-              value="recents"
-              icon={<SendIcon />}
-            />
-            <BottomNavigationAction
-              onClick={()=> history("/Favourites")}
-              label="Favorites"
-              value="favorites"
-              icon={<FavoriteIcon />}
-            />
-            {/* <BottomNavigationAction
-              onClick={()=>history("/")}
-              label="Home"  
-              value="home"
-              icon={<HealthAndSafetyIcon />}
-            /> */}
-            <BottomNavigationAction
-              label="Chats"
-              value="chat"
-              icon={<ChatBubbleIcon />}
-            />
-          </BottomNavigation>
-        </Row>
-      </Container>
-      <Dialog
+        <Dialog
         fullScreen
         open={open}
         onClose={handleClose}
@@ -355,33 +297,8 @@ function Home() {
           </List>
         </DialogContent>
       </Dialog>
-
-      {/* <Dialog
-        // fullScreen={fullScreen}
-        open={requestOpen}
-        height={240}
-        onClose={()=>setRequestOpen(false)}
-        // aria-labelledby="responsive-dialog-title"
-      >
-        <DialogTitle id="responsive-dialog-title">
-          {"Use Google's location service?"}
-        </DialogTitle>
-        <DialogContent>
-        <div>
-     
-    </div>
-        </DialogContent>
-        <DialogActions>
-          <Button autoFocus onClick={()=>setRequestOpen(false)}>
-            Cancel
-          </Button>
-          <Button onClick={()=>setRequestOpen(false)} autoFocus>
-            Submit
-          </Button>
-        </DialogActions>
-      </Dialog> */}
     </>
-  );
+  )
 }
 
-export default Home;
+export default Favourites

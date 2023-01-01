@@ -11,17 +11,17 @@ import Server from '../Server/Server';
 import { toast } from 'react-toastify';
 import { useNavigate} from 'react-router-dom'
 
-function Login() {
+function ForgotPassword() {
   const history=useNavigate()
   const [open,setOpen]=useState(true)
-  const [user, setUser] = React.useState({ email: "", password: ""});
-  const [latitude,setLatitude]=React.useState(0)
-  const [longitude,setLongitude]=React.useState(0)
+  const [user, setUser] = React.useState({ email: ""});
+//   const [latitude,setLatitude]=React.useState(0)
+//   const [longitude,setLongitude]=React.useState(0)
   console.log("hey user",user)
-  window.navigator.geolocation
-  .getCurrentPosition((res)=>setLatitude(res.coords.latitude));
-  window.navigator.geolocation
-  .getCurrentPosition((res)=> setLongitude(res.coords.longitude))
+//   window.navigator.geolocation
+//   .getCurrentPosition((res)=>setLatitude(res.coords.latitude));
+//   window.navigator.geolocation
+//   .getCurrentPosition((res)=> setLongitude(res.coords.longitude))
   let name, value;
   const handaleinput = (e) => {
     name = e.target.name;
@@ -33,23 +33,13 @@ function Login() {
   };
   const submitLogin=()=>{
     var data=user
-    data.longitude=longitude.toString()
-    data.latitude=latitude.toString()
-    axios.post(Server.Server.serverForOthers.link+"/user/login",data).then((res)=>{
+    // data.longitude=longitude.toString()
+    // data.latitude=latitude.toString()
+    axios.post(Server.Server.serverForOthers.link+"/user/forgotPassword",data).then((res)=>{
       console.log("res")
       if(res.data.code===200){
-        if(res.data.results.role==="User"){
-          localStorage.setItem("token",res.data.results.accessToken)
-          history("/")
-          localStorage.setItem("role","User")
-          window.location.reload();
-        }else if(res.data.results.role==="Doctor"){
-          history("/Requests")
-          localStorage.setItem("doctorToken",res.data.results.accessToken)
-          localStorage.setItem("role","Doctor")
-          window.location.reload();
-        }
-       
+        
+       toast.success("Check your mail to setup new password")
         
       }else{
         toast.error(res.data.message)
@@ -75,31 +65,24 @@ function Login() {
             variant="standard"
             onChange={handaleinput}
           />
-              <TextField
-            autoFocus
-            margin="dense"
-            id="password"
-            label="Password"
-            type="password"
-            name="password"
-            fullWidth
-            variant="standard"
-            onChange={handaleinput}
-          />
+             
           
         </DialogContent>
         <DialogActions>
-        <Button onClick={submitLogin}>Sign In</Button>
+        <Button onClick={submitLogin}>Submit</Button>
+        </DialogActions>
+        <DialogActions>
+        <Button onClick={()=>history("/Signin")}>Signin</Button>
         </DialogActions>
         <DialogActions>
         <Button onClick={returnTo}>Create Your new Account</Button>
         </DialogActions>
-        <DialogActions>
-          <Button onClick={()=>history('/Forgot')}>Forgot Password</Button>
-        </DialogActions>
+        {/* <DialogActions>
+          <Button >Forgot Password</Button>
+        </DialogActions> */}
       </Dialog>
       </>
   )
 }
 
-export default Login
+export default ForgotPassword

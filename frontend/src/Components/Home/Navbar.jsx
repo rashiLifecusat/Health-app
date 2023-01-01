@@ -11,6 +11,7 @@ import AccountCircle from "@mui/icons-material/AccountCircle";
 import Switch from "@mui/material/Switch";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormGroup from "@mui/material/FormGroup";
+import RequestPageIcon from '@mui/icons-material/RequestPage';
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
@@ -148,6 +149,11 @@ function Navbar() {
   var token = userToken ? userToken :docToken
   const fetchData=()=>{
     axios.get(Server.Server.serverForOthers.link+"/user/getUser",{headers:{"x-token":token}}).then((response)=>{
+      if(response.data.code===203){
+        localStorage.clear()
+        history("/Signin")
+      }
+      // window.location.reload()
         // console.log(,".,......")
         setData(response.data.results)
         setProfilePhoto(response.data.results.profilePhoto)
@@ -279,7 +285,7 @@ function Navbar() {
               </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
-              <ListItemButton onClick={()=>{tokenOf ===1 ? history("/") : history("/Doctorupdate")}}>
+              <ListItemButton onClick={()=>{tokenOf ===1 ? history("/userupdate") : history("/Doctorupdate")}}>
                 <ListItemIcon>
                   <ManageAccountsIcon />
                 </ListItemIcon>
@@ -287,11 +293,11 @@ function Navbar() {
               </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
-              <ListItemButton>
+              <ListItemButton onClick={()=>history("/requestStatus")}>
                 <ListItemIcon>
-                  <Chat />
+                  <RequestPageIcon />
                 </ListItemIcon>
-                <ListItemText primary="Messages" />
+                <ListItemText primary="Request Status" />
               </ListItemButton>
             </ListItem>
             {tokenOf ===1 ? (
