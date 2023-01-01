@@ -36,30 +36,28 @@ export default function Register() {
   window.navigator.geolocation
   .getCurrentPosition((res)=> setLongitude(res.coords.longitude))
  
-  var a=user
-  a.role=radioValue
-  console.log(a,"hey user....")
+  // var a=user
+  // a.role=radioValue
+  // console.log(a,"hey user....")
   const handleChange = (event) => {
     setValue(event.target.value);
   };
   const Register = () => {
     var data=user
-    data.role=value
+    data.role=radioValue
     data.latitude=latitude.toString()
     data.longitude=longitude.toString()
     console.log(data,"the data is here")
     axios.post(Server.Server.serverForOthers.link+"/user/generateOTP",data).then((res)=>{
-     
       if(res.data.code===200){
         localStorage.clear("retrunToken")
         localStorage.setItem("retrunToken",res.data.returnToken)
         localStorage.setItem("email",data.email)
         history("/VerifyOtp")
-      }else if(res.data.code===201){
+      } else if (res.data.code===201){
         toast.error(res.data.message)
       }
-    })
-    
+    })    
   };
 
   const returnTo = () => {

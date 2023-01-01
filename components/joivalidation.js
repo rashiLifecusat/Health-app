@@ -61,6 +61,11 @@ module.exports = (req, res, next) => {
     new_password:Joi.string().required()
   })
 
+  const booking= Joi.object({
+    date:Joi.number().required(),
+    doctorId:Joi.string().required()
+  })
+
   const adminLogin= Joi.object({
     email:Joi.string().required(),
     password:Joi.string().required()
@@ -83,6 +88,7 @@ module.exports = (req, res, next) => {
   if (req.path == "/user/verifyEmailOtp") var { error, value } = emailOtp.validate(req.body, options);
   if (req.path == "/user/newPassword") var { error, value } = newPassword.validate(req.body, options);
   if (req.path == "/user/resetPassword") var { error, value } = resetPassword.validate(req.body, options);
+  if (req.path == "/user/booking_request") var { error, value } = booking.validate(req.body, options);
   if (req.path == "/admin/login") var { error, value } = adminLogin.validate(req.body, options);
   if (error) {
     // returning the error if there is anything

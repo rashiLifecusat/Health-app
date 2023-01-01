@@ -32,8 +32,15 @@ router.post('/user/newPassword',joiValidation,userService.newPassword);
 router.post('/user/resetPassword',joiValidation,userService.resetPassword);
 router.post('/user/logout',userService.logOut);
 router.post('/user/updateProfile',isAuthenticated,profileUpload.single('file'),userService.updateProfile);
-router.post('/user/booking_request',isAuthenticated,userService.booking_request)
+router.get('/user/getUser',isAuthenticated,userService.getUser)
+// router.post('/user/updateProfile',profileUpload.single('file'),async(req,res)=>{
+//     console.log(req.body,",,,,,,")
+// });
+
+router.post('/user/booking_request',isAuthenticated,joiValidation,userService.booking_request)
 router.post('/user/accept_or_decline',isAuthenticated,userService.accept_or_decline)
+router.get('/user/usersHome',isAuthenticated,userService.home)
+router.get('/user/getRequestsforUser',isAuthenticated,userService.getRequestForUser)
 
 
 router.get('/user/testApi',async(req,res)=>{
@@ -42,17 +49,23 @@ router.get('/user/testApi',async(req,res)=>{
 async function isAuthenticated(req,res,next) {
     let givenToken=req.headers['x-token']||req.query['token'];
     let existingToken= await lib.userModel.findOne({accessToken:givenToken})
+    console.log("here1",givenToken)
     if(!existingToken) {
+        console.log("here2")
         return res.send({status:false,code:203,message:message.SESSION_ERROR});
     }else if(existingToken.adminBlock==true){
+        console.log("here3")
         return res.send({status:false,code:203,message:message.BLOCKED_BY_ADMIN});
     }
     else{
+        console.log("here4")
         if(givenToken==existingToken.accessToken){
+            console.log("here5")
             lib.jwt.verify(givenToken,process.env.JWT_SECRET,(err,result)=>{
                 if(err) return res.send({status:false,code:203,message:message.SESSION_ERROR});
                 else 
                 req.body.userId=existingToken._id.toString();
+                console.log("here6")
                 next()
             })
           } else {

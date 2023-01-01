@@ -34,10 +34,20 @@ const options = {
 const swaggerSpecification = swaggerJsDocs(options);
 console.log(swaggerSpecification);
 app.use(lib.cors());
+app.set('views', lib.path.join(__dirname, 'views'));
+app.set('view engine', 'hbs');
+app.engine('hbs', lib.hbs.engine({
+    extname: 'hbs',
+    defaultLayout: 'main',
+    layoutsDir: __dirname + '/views/layouts/',
+  }))
+
 app.use(lib.express.urlencoded({ limit: "50mb", extended: true, parameterLimit: 50000 }))
 app.use(lib.express.json({ limit: "50mb", extended: true, parameterLimit: 50000 }))
 app.use(lib.bodyParser.json({limit: "50mb"}));
 app.use(lib.bodyParser.urlencoded({limit: "50mb", extended: true, parameterLimit:50000}));
+app.use(lib.express.static(lib.path.join(__dirname, '/public/')));
+console.log("/klkk",lib.path.join(__dirname, '/public'))
 
 //Router defining
 app.use(userRouter)
@@ -49,19 +59,14 @@ app.use(
   swaggerUi.setup(swaggerSpecification, { explorer: true })
 );
 
-app.set('views', lib.path.join(__dirname, 'views'));
-app.set('view engine', 'hbs');
-app.engine('hbs', lib.hbs.engine({
-    extname: 'hbs',
-    defaultLayout: 'main',
-    layoutsDir: __dirname + '/views/layouts/',
-  }))
 
-app.use(lib.express.static(lib.path.join(__dirname, '/public/')));
 
-app.get('/*',function (req, res) {
-  res.sendFile(lib.path.join(__dirname, '/public/index.html'));
-});
+
+
+
+// app.get('/*',function (req, res) {
+//   res.sendFile(lib.path.join(__dirname, '/public/index.html'));
+// });
 
 server.listen(appCred.port, (err) => {
   if (err) {

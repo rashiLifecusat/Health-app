@@ -15,14 +15,23 @@ import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
 import InputBase from "@mui/material/InputBase";
-import BottomNavigation from '@mui/material/BottomNavigation';
-import BottomNavigationAction from '@mui/material/BottomNavigationAction';
-import RestoreIcon from '@mui/icons-material/Restore';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
-import { useNavigate} from 'react-router-dom'
+import BottomNavigation from "@mui/material/BottomNavigation";
+import BottomNavigationAction from "@mui/material/BottomNavigationAction";
+import RestoreIcon from "@mui/icons-material/Restore";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+// import { useNavigate } from "react-router-dom";
 import {
   Button,
+  Card,
+  CardActions,
+  CardContent,
+  CardMedia,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   Drawer,
   List,
   ListItem,
@@ -32,13 +41,23 @@ import {
   Paper,
 } from "@mui/material";
 import logo from "../../images/HP.png";
-import HomeIcon from '@mui/icons-material/Home';
-import SettingsIcon from '@mui/icons-material/Settings';
-import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
-import PolicyIcon from '@mui/icons-material/Policy';
-import QuizIcon from '@mui/icons-material/Quiz';
-import CloseIcon from '@mui/icons-material/Close';
+import HomeIcon from "@mui/icons-material/Home";
+import SettingsIcon from "@mui/icons-material/Settings";
+import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
+import PolicyIcon from "@mui/icons-material/Policy";
+import QuizIcon from "@mui/icons-material/Quiz";
+import CloseIcon from "@mui/icons-material/Close";
 import Chat from "@mui/icons-material/Chat";
+import { useEffect } from "react";
+import Slide from "@mui/material/Slide";
+import Server from "../Server/Server";
+import axios from "axios";
+import VerifiedIcon from '@mui/icons-material/Verified';
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -82,28 +101,70 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-const DrawerHeader = styled('div')(({ theme }) => ({
-    display: 'flex',
-    alignItems: 'center',
-    padding: theme.spacing(0, 1),
-    // necessary for content to be below app bar
-    ...theme.mixins.toolbar,
-    justifyContent: 'flex-start',
-  }));
+const DrawerHeader = styled("div")(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  padding: theme.spacing(0, 1),
+  // necessary for content to be below app bar
+  ...theme.mixins.toolbar,
+  justifyContent: "flex-start",
+}));
 
 function Navbar() {
-  // var history=useNavigate()
+  var history=useNavigate()
   const [auth, setAuth] = useState(false);
-  var authentication=localStorage.getItem("auth")
-  if(authentication===true){
-    setAuth(true)
+  const [profile, setProfile] = useState(false);
+  const [logout,setLogout]= useState(false)
+  var authentication = localStorage.getItem("auth");
+  if (authentication === true) {
+    setAuth(true);
   }
   const [anchorEl, setAnchorEl] = useState(null);
   const [open, setOpen] = useState(false);
+  const [data,setData]=useState({})
+  const [profilePhoto,setProfilePhoto]=useState("")
   console.log(auth, "this is auth");
-  const handleChange = (event) => {
-    setAuth(event.target.checked);
-  };
+  var userToken = localStorage.getItem("token");
+  var docToken = localStorage.getItem("doctorToken");
+  console.log(data,"kkkkk")
+  var tokenOf;
+  if(userToken){
+    tokenOf=1
+  }else if(docToken){
+    tokenOf=2
+  }else{
+    tokenOf=3
+  }
+
+  useEffect(() => {
+    if (userToken || docToken) {
+      setAuth(true);
+    }
+  });
+
+  useEffect(()=>{
+    fetchData()
+  },[])
+  var token = userToken ? userToken :docToken
+  const fetchData=()=>{
+    axios.get(Server.Server.serverForOthers.link+"/user/getUser",{headers:{"x-token":token}}).then((response)=>{
+        // console.log(,".,......")
+        setData(response.data.results)
+        setProfilePhoto(response.data.results.profilePhoto)
+    })
+  }
+
+  const  logoutSubmit = ()=>{
+    axios.post(Server.Server.serverForOthers.link+"/user/logout",{},{headers:{"x-token":token}}).then((response)=>{
+      if(response.data.code ===200){
+        history("/Signin")
+        localStorage.clear()
+        handleClose()
+        setLogout(false)
+        toast.success("logged out successfully")
+      }
+    })
+  }
 
   const closeDrawer = () => {
     setOpen(false);
@@ -117,9 +178,18 @@ function Navbar() {
     setAnchorEl(null);
   };
 
-  // const redirectTo=()=>{
-  //   history("/Signin")
-  // }
+  const handleCloseProfile = () => {
+    setProfile(false);
+  };
+
+  const handleOpenProfile = () => {
+    setProfile(true);
+    handleClose()
+  };
+  // var images =data.profilePhoto === undefined ? "" :data.profilePhoto
+  var image = profilePhoto==="" ? "https://icon-library.com/images/default-user-icon/default-user-icon-8.jpg": Server.Server.serverForOthers.link+`/Profilephoto/${profilePhoto}`
+
+  // console.log(image,"kkkkk",data.profilePhoto)
 
   return (
     <>
@@ -178,8 +248,8 @@ function Navbar() {
                   open={Boolean(anchorEl)}
                   onClose={handleClose}
                 >
-                  <MenuItem onClick={handleClose}>My account</MenuItem>
-                  <MenuItem onClick={handleClose}>Log out</MenuItem>
+                  <MenuItem onClick={handleOpenProfile}>View Profile</MenuItem>
+                  <MenuItem onClick={()=>setLogout(true)}>Log out</MenuItem>
                 </Menu>
               </div>
             ) : (
@@ -187,31 +257,31 @@ function Navbar() {
               // <Button variant="outlined" >Login</Button>""
             )}
           </Toolbar>
-          
         </AppBar>
-        <Drawer open={open} anchor="left" onClose={closeDrawer} >
+        <Drawer open={open} anchor="left" onClose={closeDrawer}>
           <DrawerHeader>
-          <IconButton onClick={closeDrawer}>
-                <CloseIcon/>
-          </IconButton>
-          <Typography component="div" sx={{ flexGrow: 1 }}>
+            <IconButton onClick={closeDrawer}>
+              <CloseIcon />
+            </IconButton>
+            <Typography component="div" sx={{ flexGrow: 1 }}>
               {/* <img src={logo} style={{ maxWidth: "50px", height: "50px" }} /> */}
               HEALTH APP
             </Typography>
-        </DrawerHeader>
+          </DrawerHeader>
           <List>
             <ListItem disablePadding>
-              <ListItemButton>
+              <ListItemButton onClick={()=> {tokenOf ===1 ? history("/") : history("/Requests")}}>
                 <ListItemIcon>
-                <HomeIcon/>
+                  <HomeIcon />
                 </ListItemIcon>
                 <ListItemText primary="Home" />
+                
               </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
-              <ListItemButton>
+              <ListItemButton onClick={()=>{tokenOf ===1 ? history("/") : history("/Doctorupdate")}}>
                 <ListItemIcon>
-                <ManageAccountsIcon/>
+                  <ManageAccountsIcon />
                 </ListItemIcon>
                 <ListItemText primary="Profile Management" />
               </ListItemButton>
@@ -219,32 +289,39 @@ function Navbar() {
             <ListItem disablePadding>
               <ListItemButton>
                 <ListItemIcon>
-                <Chat/>
+                  <Chat />
                 </ListItemIcon>
                 <ListItemText primary="Messages" />
               </ListItemButton>
             </ListItem>
+            {tokenOf ===1 ? (
+              <>
+                     
             <ListItem disablePadding>
               <ListItemButton>
                 <ListItemIcon>
-                <FavoriteIcon/>
+                  <FavoriteIcon />
                 </ListItemIcon>
                 <ListItemText primary="Favorites" />
               </ListItemButton>
             </ListItem>
-            
-            <ListItem disablePadding>
+              </>
+            ):""
+}
+    
+
+            {/* <ListItem disablePadding>
               <ListItemButton>
                 <ListItemIcon>
-                <SettingsIcon/>
+                  <SettingsIcon />
                 </ListItemIcon>
                 <ListItemText primary="Settings" />
               </ListItemButton>
-            </ListItem>
+            </ListItem> */}
             <ListItem disablePadding>
               <ListItemButton>
                 <ListItemIcon>
-                <PolicyIcon/>
+                  <PolicyIcon />
                 </ListItemIcon>
                 <ListItemText primary="Privacy policy" />
               </ListItemButton>
@@ -252,7 +329,7 @@ function Navbar() {
             <ListItem disablePadding>
               <ListItemButton>
                 <ListItemIcon>
-                <QuizIcon/>
+                  <QuizIcon />
                 </ListItemIcon>
                 <ListItemText primary="FAQ" />
               </ListItemButton>
@@ -271,8 +348,63 @@ function Navbar() {
             label={auth ? "Logout" : "Login"}
           />
         </FormGroup> */}
-        
       </Box>
+     {auth===true ? (
+     <>  
+     <Dialog
+       open={profile}
+       TransitionComponent={Transition}
+       keepMounted
+       onClose={handleCloseProfile}
+       aria-describedby="alert-dialog-slide-description"
+     >
+       <Card sx={{ maxWidth: 345 }}>
+         <CardMedia
+           component="img"
+           alt="green iguana"
+           height="140"
+           image={image}
+         />
+         <CardContent>
+           <Typography gutterBottom variant="h5" component="div">
+             {data.user_name}
+           </Typography>
+           <Typography variant="body2" color="text.secondary">
+            Bio:- {data.bio}
+           </Typography>
+           <Typography variant="body2" color="text.secondary">
+             Contact : -{data.countryCode}{data.contact}
+           </Typography>
+           <Typography variant="body2" color="text.secondary">
+             Email :-{data.email}
+           </Typography>
+           <Typography variant="body2" color="text.secondary">
+             {data.isEmailVerified ===true ? (<>Email Verified <VerifiedIcon style={{color:"green"}}/></>):(<>Email Not Verified <VerifiedIcon style={{color:"red"}}/></>)}
+           </Typography>
+         </CardContent>
+         <CardActions>
+           <Button onClick={handleCloseProfile}>Close</Button>
+           {/* <Button onClick={handleCloseProfile}>Edit</Button> */}
+         </CardActions>
+       </Card>
+     </Dialog>
+     <Dialog
+       open={logout}
+       TransitionComponent={Transition}
+       keepMounted
+       onClose={()=>setLogout(false)}
+       aria-describedby="alert-dialog-slide-description"
+     >
+     <DialogTitle>{"Would you like to logout?"}</DialogTitle>
+        <DialogActions>
+          <Button onClick={()=>setLogout(false)}>Cancel</Button>
+          <Button onClick={logoutSubmit}>Agree</Button>
+        </DialogActions>
+     </Dialog>
+     </>
+
+     
+     ):""}
     </>
   );
 }

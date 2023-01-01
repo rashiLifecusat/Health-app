@@ -63,17 +63,18 @@
 .h3, h3,p{
   color: black;
 }
-
-/* #menu-appbar {
-  height: 128px !important;
-} */
-
-/* a.carousel-control-prev{
-  display: none;
-
+.MuiGrid-root.MuiGrid-container.MuiGrid-spacing-xs-2{
+  margin-bottom: 23%;
+}
+.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation1.MuiCard-root.profilePic_doc{
+  margin-left: auto;
+  margin-right: auto;
 }
 
-a.carousel-control-next{
-  display: none;
-  
-} */
+.MuiTabs-scroller.MuiTabs-fixed{
+  margin-left: 3%;
+}
+.MuiFormControl-root.MuiTextField-root{
+  margin: 6px !important;
+  width: 99% !important;
+}

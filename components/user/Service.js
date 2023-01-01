@@ -212,8 +212,8 @@ module.exports = {
         message: messages.ANNONYMOUS,
       });
     }
-    var longitude = parseInt(body.longitude);
-    var latitude = parseInt(body.latitude);
+    var longitude = parseFloat(body.longitude);
+    var latitude = parseFloat(body.latitude);
     let data = {
       user_name: body.user_name,
       email: body.email,
@@ -227,6 +227,7 @@ module.exports = {
       role: body.role,
       accessToken: "",
     };
+    console.log( body.role,"jjjjjj")
     var user = new lib.userModel(data);
     try {
       var hashedPassword = getHashedPassword(user.password);
@@ -774,7 +775,8 @@ module.exports = {
   },
   logOut:async(req,res)=>{
     try {
-      var user= await lib.userModel.findOne({accessToken:req.headers["x_tokken"]})
+      var user= await lib.userModel.findOne({accessToken:req.headers["x-token"]})
+      console.log(req.headers["x-token"],"llllll")
       var updateUser = await lib.userModel.findByIdAndUpdate({_id:user._id},{
         accessToken:"",
         device_Token:  "" ,
@@ -820,11 +822,12 @@ module.exports = {
         var data = {
           user_name:body.user_name=="" ? user.user_name:body.user_name,
           contact:body.contact =="" ? user.contact:body.contact,
+          countryCode:body.countrycode =="" ? user.countryCode:body.countrycode,
           profilePhoto: body.file=="" ? user.profilePhoto: body.file,
-          bio:body.bio=="" ? user.bio:body.bio,
-          category:body.category=="" ? user.category : body.category,
-          email:body.email=="" ? user.email:body.email
+          bio:body.bio=="" ? user.bio:body.bio
         }
+
+        console.log(user,"kkkk",data)
   
         var updatedUserdata = await lib.userModel.findByIdAndUpdate({_id:user._id},data,{new:true});
         delete updatedUserdata.password;
@@ -851,6 +854,28 @@ module.exports = {
     
   },
 
+  getUser:async(req,res)=>{
+    try {
+      var user = await lib.userModel.findOne({accessToken:req.headers["x-token"]},{password:0})    
+      var response= commonfunctions.checkRes(user);
+        response.message="Profile management";
+        // delete response.results.password
+        logger.info(
+          `${req.url},${req.method},${req.hostname},${JSON.stringify(
+            response.status
+          )}`
+        );
+        return res.status(200).send(response);
+    } catch (e) {
+      logger.error(e)
+      return res.json({
+        status: false,
+        code: 201,
+        message: messages.ANNONYMOUS,
+      });
+    }
+  },
+
   booking_request:async(req,res)=>{
     var body= req.body;
     try {
@@ -864,31 +889,44 @@ module.exports = {
       });
     }
 
-    try {
-      var data ={
-        userId:user._id,
-        date:body.date,
-        doctorId:body.doctorId
-      }
-      var request_send= new lib.bookingModel(data)
-      request_send.save()
-      var response= commonfunctions.checkRes(request_send);
-      response.message="Request send successfully";
-      logger.info(
-        `${req.url},${req.method},${req.hostname},${JSON.stringify(
-          response.status
-        )}`
-      );
-      return res.status(200).send(response);
+    var existBooking= await lib.bookingModel.find({$and:[{userId:user._id},{doctorId:body.doctorId},{date:body.date},{type:"0"}]})
+if(existBooking.length>0){
+  return res.status(202).send({status:false,code:202,message:"Request already exist"})
+}else{
+  var current= lib.moment().valueOf()
+    if(current>body.date){
+      return res.status(202).send({status:false,code:202,message:"Please provide a correct Date"})
+    }else{
+      try {
       
-    } catch (e) {
-      logger.error(e)
-      return res.json({
-        status: false,
-        code: 201,
-        message: messages.ANNONYMOUS,
-      })
+        var data ={
+          userId:user._id,
+          date:body.date,
+          doctorId:body.doctorId
+        }
+  
+        var request_send= new lib.bookingModel(data)
+        request_send.save()
+        var response= commonfunctions.checkRes(request_send);
+        response.message="Request send successfully";
+        logger.info(
+          `${req.url},${req.method},${req.hostname},${JSON.stringify(
+            response.status
+          )}`
+        );
+        return res.status(200).send(response);
+        
+      } catch (e) {
+        logger.error(e)
+        return res.json({
+          status: false,
+          code: 201,
+          message: messages.ANNONYMOUS,
+        })
+      }
     }
+    
+  }
   },
 
   accept_or_decline:async(req,res)=>{
@@ -921,5 +959,135 @@ module.exports = {
         message: messages.ANNONYMOUS,
       });
     }
-  }
+  },
+
+  home:async(req,res)=>{
+    try {
+      var data = await lib.userModel.aggregate([
+        {
+          '$geoNear': {
+            'near': {
+              'type': 'Point', 
+              'coordinates': [
+                76, 30
+              ]
+            }, 
+            'distanceField': 'string', 
+            'spherical': true
+          }
+        }, {
+          '$match': {
+            'role': 'Doctor'
+          }
+        }, {
+          '$project': {
+            'email': 1, 
+            'user_name': 1, 
+            'profilePhoto': 1,
+            "bio":1
+          }
+        },
+        {
+          "$skip":parseInt(req.query["skip"])*parseInt(req.query["limit"])
+        },
+        {
+          "$limit":parseInt(req.query["limit"])
+        }
+      ])
+      console.log(parseInt(req.query["skip"])*parseInt(req.query["limit"]),"lklll",parseInt(req.query["limit"]))
+      var dataCount = await lib.userModel.aggregate([
+        {
+          '$geoNear': {
+            'near': {
+              'type': 'Point', 
+              'coordinates': [
+                76, 30
+              ]
+            }, 
+            'distanceField': 'string', 
+            'spherical': true
+          }
+        }, {
+          '$match': {
+            'role': 'Doctor'
+          }
+        }])
+      var totalDoc = dataCount.length > 0 ? dataCount.length : 0 
+      var response= commonfunctions.checkRes(data);
+      response.message="Near by data";
+      response.totalDoc =totalDoc
+      logger.info(
+        `${req.url},${req.method},${req.hostname},${JSON.stringify(
+          response.status
+        )}`
+      );
+      return res.status(200).send(response);
+    } catch (e) {
+      logger.error(e)
+        return res.json({
+          status: false,
+          code: 201,
+          message: messages.ANNONYMOUS,
+        })
+    }
+  },
+
+  getRequestForUser:async(req,res)=>{
+    try {
+      var user = await lib.userModel.findOne({accessToken:req.headers["x-token"]})
+    } catch (e) {
+      
+    }
+    console.log(typeof(req.query["type"]),",,,,",user)
+   try {
+    var data = await lib.bookingModel.aggregate([
+      {
+        '$match': {
+          'doctorId': mongoose.Types.ObjectId(user._id),
+          'type':req.query["type"]
+        }
+      }, 
+      {
+        '$lookup': {
+          'from': 'users', 
+          'localField': 'doctorId', 
+          'foreignField': '_id', 
+          'as': 'users'
+        }
+      }, {
+        '$unwind': {
+          'path': '$users', 
+          'includeArrayIndex': 'string', 
+          'preserveNullAndEmptyArrays': false
+        }
+      }, {
+        '$project': {
+          'name': '$users.user_name', 
+          'date': 1, 
+          'userId':"$users._id",
+          'consultingDuration': 1, 
+          'profile': '$users.profilePhoto'
+        }
+      }
+    ]) 
+
+    console.log(data,".......")
+
+    var response= commonfunctions.checkRes(data);
+    response.message="Request list";
+    logger.info(
+      `${req.url},${req.method},${req.hostname},${JSON.stringify(
+        response.status
+      )}`
+    );
+    return res.status(200).send(response);
+   } catch (e) {
+    logger.error(e)
+        return res.json({
+          status: false,
+          code: 201,
+          message: messages.ANNONYMOUS,
+        })
+   }
+  } 
 };

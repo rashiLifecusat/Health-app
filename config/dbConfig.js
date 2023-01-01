@@ -12,14 +12,14 @@ const options = {
 let port;
 let link;
 if(env.instance=="local"){
-    database = process.env.DB_LOCAL;
+    database = process.env.DB_DUMMY;
 }else if(env.instance=="dev"){
     database = process.env.DB_PROD;
     options.user = process.env.DB_PROD_USER;
     options.pass = process.env.DB_PROD_PASS;
     port = process.env.DB_LIVE_HOST;
 }
-url=process.env.DB_LOCAL;
+url=process.env.DB_DUMMY;
 
 
 mongoose.connect(url,options).then((client,err)=>{

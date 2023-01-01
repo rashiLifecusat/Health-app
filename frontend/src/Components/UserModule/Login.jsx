@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, {  useState } from 'react'
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
@@ -38,9 +38,19 @@ function Login() {
     axios.post(Server.Server.serverForOthers.link+"/user/login",data).then((res)=>{
       console.log("res")
       if(res.data.code===200){
+        if(res.data.results.role==="User"){
+          localStorage.setItem("token",res.data.results.accessToken)
+          history("/")
+          localStorage.setItem("role","User")
+          window.location.reload();
+        }else if(res.data.results.role==="Doctor"){
+          history("/Requests")
+          localStorage.setItem("doctorToken",res.data.results.accessToken)
+          localStorage.setItem("role","Doctor")
+          window.location.reload();
+        }
        
-        localStorage.setItem("token",res.data.results.accessToken)
-        history("/")
+        
       }else{
         toast.error(res.data.message)
       }
